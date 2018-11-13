@@ -200,16 +200,7 @@ public class DataOperater implements Runnable {
 				return;
 			}
 			try {
-				for (Socket socket : ServiceClient.socketList) {
-//					
-//					try{
-//					    socket.sendUrgentData(0xFF);
-//					}catch(Exception e){  //说明已经断开
-//						ServiceClient.socketList.remove(socket);
-//						System.out.println(ServiceClient.socketList.size() + "socket个数");
-//						continue;
-//					}
-					
+				for (Socket socket : ServiceClient.socketList) {								
 					// 向客户端传递的信息
 					OutputStream os = socket.getOutputStream();			
 			        PrintWriter pw = new PrintWriter(os);// 包装打印流
