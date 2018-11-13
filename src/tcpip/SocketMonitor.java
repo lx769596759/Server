@@ -29,10 +29,16 @@ public class SocketMonitor implements Runnable {
 					System.out.println("接收命令:" + info);
 				}
 			} catch (IOException e) {
-				logger.error("检测到Socket断开："
+				logger.info("检测到Socket断开："
 						+ socket.getInetAddress().getHostAddress());
 				ServiceClient.socketList.remove(socket);
-				socket = null;
+				try {
+					socket.close();
+				} catch (IOException e1) {
+					logger.error("Socket关闭失败",e1);					
+				} finally {
+					socket = null;
+				}
 				break;
 			}
 		}
