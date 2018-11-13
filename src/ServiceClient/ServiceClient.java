@@ -65,7 +65,7 @@ public class ServiceClient extends JFrame implements Runnable {
 	public static JTextField tf_speed; // 显示皮带线速度
 	public static JTextField tf_speed2; // 显示出土量
 	public static JTextPane recordTime; // 显示记录时间
-	public static ArrayList<Socket> socketList;
+	public static volatile ArrayList<Socket> socketList;
 
 	/**
 	 * Launch the application.
