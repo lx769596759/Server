@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
@@ -47,9 +48,8 @@ import serialPort.DataOperater;
 import serialPort.GetSpeed;
 import serialPort.RecieveFromPort;
 import serialPort.SerialTool;
+import tcpip.SocketMonitor;
 import dbUtility.dbTools;
-
-import javax.swing.JTextPane;
 
 public class ServiceClient extends JFrame implements Runnable {
 
@@ -163,12 +163,13 @@ public class ServiceClient extends JFrame implements Runnable {
 		
 		try {
 	        ServerSocket server =  new ServerSocket(8888);
-	            logger.info("server is listenning...");
+	            logger.info("Server Listenning...");
 	            socketList = new ArrayList<Socket>(); 
 	            while(true){//不断循环随时等待新的客户端接入服务器
 	                Socket clientSocket = server.accept();
 	                socketList.add(clientSocket);
 	                logger.info(clientSocket.getInetAddress().getHostAddress() + " connected...");
+	                new Thread(new SocketMonitor(clientSocket)).start(); //为每个线程开启一个监控线程
 	            }
 	        } catch (IOException e) {
 	        	logger.error("", e);
