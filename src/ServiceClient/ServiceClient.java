@@ -172,7 +172,7 @@ public class ServiceClient extends JFrame implements Runnable {
 	                new Thread(new SocketMonitor(clientSocket)).start(); //为每个线程开启一个监控线程
 	            }
 	        } catch (IOException e) {
-	        	logger.error("", e);
+	        	logger.error("Socket异常", e);
 	        }
 
 		

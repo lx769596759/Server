@@ -1,9 +1,7 @@
 package serialPort;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.Connection;
@@ -11,10 +9,9 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import ServiceClient.ServiceClient;
 import dbUtility.WriteToDb;
 import dbUtility.dbTools;
-import ServiceClient.ServiceClient;
 
 public class DataOperater implements Runnable {
 
@@ -33,7 +30,7 @@ public class DataOperater implements Runnable {
 		try {
 			while (true) {
 
-				if (exit == true) {
+				if (exit) {
 					conn.close();
 					break;
 				}
@@ -51,6 +48,7 @@ public class DataOperater implements Runnable {
 								Thread.sleep(100);
 							} catch (InterruptedException e) {
 								ServiceClient.logger.error(e.getMessage(), e);
+								Thread.currentThread().interrupt();
 							}
 							continue;
 						} else if (result2 != null)// 速度有值，距离无值
@@ -160,7 +158,7 @@ public class DataOperater implements Runnable {
 							+ recordTime);
 					
 					//通过Socket向外发送消息
-					String message = "speed=" + String.valueOf(finalValue) + ";" + "time=" + recordTime;
+					String message = "speed=" + finalValue + ";" + "time=" + recordTime;
 					new SendToSocket(message); 
 
 					try {
@@ -195,8 +193,9 @@ public class DataOperater implements Runnable {
 		}
 
 		//循环向每个连接上的socket发送数据
+		@Override
 		public void run() {
-			if (ServiceClient.socketList.size() == 0) {
+			if (ServiceClient.socketList.isEmpty()) {
 				return;
 			}
 			try {
