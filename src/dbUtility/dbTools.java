@@ -30,7 +30,6 @@ public class dbTools {
 		}
 		return conn;
 	}
-	
 
 	// 创建表
 	public void dbCreate() throws Exception {
@@ -61,33 +60,35 @@ public class dbTools {
 	}
 
 	// 查询表select
-	public String ddlSelect(String sql,Connection conn,String title1,String title2) throws Exception {
-        //Connection conn=getConn(driverName, dbUrl, us, pw);
-        Statement sta=conn.createStatement();
-        ResultSet rs=sta.executeQuery(sql);
-        String value = null;
-        String logTime = null;
-        while(rs.next()){
-             value=rs.getString(title1);
-             logTime=rs.getString(title2);
-             //System.out.println(logTime+","+value);            
-        }
-        sta.close();
-        //conn.close();
-        if (value!=null&&logTime!=null)
-        {
-		 return logTime+","+value;}
-        else return null;
+	public String ddlSelect(String sql, Connection conn, String title1,
+			String title2) throws Exception {
+		// Connection conn=getConn(driverName, dbUrl, us, pw);
+		Statement sta = conn.createStatement();
+		ResultSet rs = sta.executeQuery(sql);
+		String value = null;
+		String logTime = null;
+		while (rs.next()) {
+			value = rs.getString(title1);
+			logTime = rs.getString(title2);
+			// System.out.println(logTime+","+value);
+		}
+		sta.close();
+		// conn.close();
+		if (value != null && logTime != null) {
+			return logTime + "," + value;
+		} else
+			return null;
 	}
 
 	// 查询SQL语句
-	public static ResultSet sqlSelect(String sql) throws Exception {	
-			Connection conn = getConn(driverName, dbUrl, us, pw);
-			Statement sta = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-			ResultSet rs = sta.executeQuery(sql);
-//			sta.close();
-//			conn.close();
-			return rs;
+	public static ResultSet sqlSelect(String sql) throws Exception {
+		Connection conn = getConn(driverName, dbUrl, us, pw);
+		Statement sta = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+				ResultSet.CONCUR_READ_ONLY);
+		ResultSet rs = sta.executeQuery(sql);
+		// sta.close();
+		// conn.close();
+		return rs;
 	}
 
 	// 删除数据方法
@@ -117,17 +118,17 @@ public class dbTools {
 		psta.close();
 		conn.close();
 	}
-	
-	   
-    //修改表中的数据
-    public void modify(String sql,Connection conn) throws Exception  {  
-        Statement sta = conn.createStatement(); 
-        //String sql1 = "insert into table_1 (检测点,测量值,READFLAG) values(1, '20',0)";  
-        sta.executeUpdate(sql);
-        //System.out.println("修改成功！");
-        sta.close();
-        //conn.close();
-           }
+
+	// 修改表中的数据
+	public void modify(String sql, Connection conn) throws Exception {
+		Statement sta = conn.createStatement();
+		// String sql1 =
+		// "insert into table_1 (检测点,测量值,READFLAG) values(1, '20',0)";
+		sta.executeUpdate(sql);
+		// System.out.println("修改成功！");
+		sta.close();
+		// conn.close();
+	}
 
 	public static void main(String[] args) throws SQLException {
 

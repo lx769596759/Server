@@ -1,9 +1,5 @@
 package serialPort;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -51,47 +47,21 @@ public class DataOperater implements Runnable {
 								Thread.currentThread().interrupt();
 							}
 							continue;
-						} else if (result2 != null)// 速度有值，距离无值
+						} else // 速度有值，面积无值
 						{
-							if (result2.split(",")[1].equals("0.00")) // 速度如果为0
-							{
-								String time = result2.split(",")[0];
-								// 前端实时显示
-								String recordTime = sdf.format(new Date());
-								ServiceClient.tf_speed.setText("0");
-								ServiceClient.tf_speed2.setText("0");
-								ServiceClient.recordTime.setText("记录时间："
-										+ recordTime);
-								
-								//通过Socket向外发送消息
-								String message = "speed=0" + ";" + "time=" + recordTime;
-								new SendToSocket(message);
-								
-								//更新数据库状态
-								String sql = "update table_3 set READFLAG=10 where 记录时间="
-										+ "'" + time + "'";
-								try {
-									db.modify(sql, conn);
-								} catch (Exception e1) {
-									ServiceClient.logger.error(e1.getMessage(),e1);
-								}
-								continue;
-							} else // 速度不为0
-							{
-								String[] array = result2.split(",");
-								String time = array[0];
-								String sql = "update table_3 set READFLAG=2 where 记录时间="
-										+ "'" + time + "'";
-								try {
-									db.modify(sql, conn);
-								} catch (Exception e1) {
-									ServiceClient.logger.error(e1.getMessage(),e1);
-								}
-								continue;
+							String[] array = result2.split(",");
+							String time = array[0];
+							String sql = "update table_3 set READFLAG=2 where 记录时间="
+									+ "'" + time + "'";
+							try {
+								db.modify(sql, conn);
+							} catch (Exception e1) {
+								ServiceClient.logger.error(e1.getMessage(), e1);
 							}
+							continue;
 						}
 					} else {
-						if (result2 == null)// 速度无值，距离有值，则进入下一个循环，直到速度有值
+						if (result2 == null)// 速度无值，面积有值，则进入下一个循环，直到速度有值
 						{
 							continue;
 						}
@@ -154,12 +124,12 @@ public class DataOperater implements Runnable {
 					String recordTime = sdf.format(new Date());
 					ServiceClient.tf_speed.setText(String.valueOf(speed));
 					ServiceClient.tf_speed2.setText(String.valueOf(finalValue));
-					ServiceClient.recordTime.setText("记录时间："
-							+ recordTime);
-					
-					//通过Socket向外发送消息
-					String message = "speed=" + finalValue + ";" + "time=" + recordTime;
-					new SendToSocket(message); 
+					ServiceClient.recordTime.setText("记录时间：" + recordTime);
+
+					// 通过Socket向外发送消息
+					String message = "speed=" + finalValue + ";" + "time="
+							+ recordTime;
+					new SendToSocket(message);
 
 					try {
 						String sql3 = "update table_1 set READFLAG=1 where 记录时间="
@@ -182,39 +152,5 @@ public class DataOperater implements Runnable {
 		} catch (Exception e) {
 			ServiceClient.logger.error(e.getMessage(), e);
 		}
-	}
-
-	class SendToSocket extends Thread {
-		private String message;
-
-		public SendToSocket(String message) {
-			this.message = message;
-			this.start();
-		}
-
-		//循环向每个连接上的socket发送数据
-		@Override
-		public void run() {
-			if (ServiceClient.socketList.isEmpty()) {
-				return;
-			}
-			try {
-				for (Socket socket : ServiceClient.socketList) {								
-					// 向客户端传递的信息
-					OutputStream os = socket.getOutputStream();			
-			        PrintWriter pw = new PrintWriter(os);// 包装打印流
-			        String test = message + "\n";
-			        System.out.println(test);
-			        pw.write(test);
-			        pw.flush();
-				}
-				// 关闭资源
-//				printWriter.close();
-//				ots.close();
-			} catch (IOException e) {
-				ServiceClient.logger.error("Socket消息发送失败", e);
-			}
-		}
-
 	}
 }
