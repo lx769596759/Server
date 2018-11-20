@@ -13,10 +13,10 @@ public class dbTools {
 	 * @param args
 	 *            实现增删改查
 	 */
-	public static String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	public static String dbUrl = "jdbc:sqlserver://localhost:1433;DatabaseName=Product";
-	public static String us = "sa";
-	public static String pw = "dbtest";
+	public static String driverName = "com.mysql.cj.jdbc.Driver";
+	public static String dbUrl = "jdbc:mysql://localhost:3306/test";
+	public static String us = "root";
+	public static String pw = "root";
 
 	// 连接数据库构造构造方法
 	public static Connection getConn(String dbDriver, String dbUrl, String us,
