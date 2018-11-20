@@ -13,8 +13,8 @@ public class dbTools {
 	 * @param args
 	 *            实现增删改查
 	 */
-	public static String driverName = "com.mysql.cj.jdbc.Driver";
-	public static String dbUrl = "jdbc:mysql://localhost:3306/test";
+	public static String driverName = "com.mysql.jdbc.Driver";
+	public static String dbUrl = "jdbc:mysql://localhost:3306/Product?useSSL=false";
 	public static String us = "root";
 	public static String pw = "root";
 
