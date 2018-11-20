@@ -82,10 +82,10 @@ public class ServiceClient extends JFrame implements Runnable {
 		try {
 			stopLidar();
 		} catch (Exception e) {
-			logger.error("关闭雷达失败", e);
+			logger.error("雷达初始化失败", e);
 			textArea.setForeground(Color.RED);
 			textArea.append(ServiceClient.df.format(new Date()) + " "
-					+ "启动失败：未正确关闭雷达！");
+					+ "启动失败：雷达初始化失败！");
 			textArea.append("\r\n");
 			return;
 		}
