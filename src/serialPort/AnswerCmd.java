@@ -1,7 +1,11 @@
 package serialPort;
 
 import gnu.io.SerialPort;
+
 import java.util.Date;
+
+import org.apache.log4j.Logger;
+
 import serialException.SendDataToSerialPortFailure;
 import serialException.SerialPortOutputStreamCloseFailure;
 import ServiceClient.ServiceClient;
@@ -9,6 +13,7 @@ import ServiceClient.ServiceClient;
 public class AnswerCmd {
 
 	static Thread reciveFromPort;
+	private static Logger logger = Logger.getLogger(AnswerCmd.class);
 
 	public static void controlPort(String cmd) {
 		
@@ -22,7 +27,8 @@ public class AnswerCmd {
 								comPorts1[i], 115200);
 						RecieveFromPort.serialCom[i].setDTR(false);// 设置或清除DTR位
 					} catch (Exception e) {
-						System.out.println(e.getMessage());
+						logger.error("雷达串口打开失败",e);
+						return;
 					}
 				}
 			}

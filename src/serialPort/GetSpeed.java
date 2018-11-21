@@ -3,6 +3,7 @@ package serialPort;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -11,6 +12,9 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TooManyListenersException;
+
+import org.apache.log4j.Logger;
+
 import dbUtility.WriteToDb;
 import ServiceClient.ServiceClient;
 import serialException.NoSuchPort;
@@ -25,20 +29,17 @@ public class GetSpeed implements SerialPortEventListener, Runnable {
 	public static Timer timer;
 	public static double diameter;
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static Logger logger = Logger.getLogger(GetSpeed.class);
 
 	public void run() {
 		if (serialCom == null) {
 			try {
 				serialCom = SerialTool.openPort("COM2", 9600);
-				try {
-					serialCom.addEventListener(new GetSpeed());
-				} catch (TooManyListenersException e) {
-					e.printStackTrace();
-				}
+				serialCom.addEventListener(new GetSpeed());
 				serialCom.notifyOnDataAvailable(true);
-			} catch (SerialPortParameterFailure | NotASerialPort | NoSuchPort
-					| PortInUse e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				logger.error("计数器串口打开失败",e);
+				return;
 			}
 		}
 		timer = new Timer();
