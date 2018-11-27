@@ -63,7 +63,7 @@ public class RecieveFromPort implements Runnable {
 				ServiceClient.textArea.append("\r\n");
 			}
 		}
-		// 初始化每个串口的数据
+		// 初始化串口的数据
 		else {
 			try {
 				for (int j = 0; j < serialCom.length; j++) {

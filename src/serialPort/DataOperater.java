@@ -13,7 +13,7 @@ public class DataOperater implements Runnable {
 
 	dbTools db = new dbTools();
 	public static boolean exit = false;
-	private static Connection conn;
+	private Connection conn;
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public void run() {

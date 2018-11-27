@@ -8,6 +8,7 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
+import serialPort.SpeedController;
 import ServiceClient.ServiceClient;
 
 public class SocketMonitor implements Runnable {
@@ -27,6 +28,8 @@ public class SocketMonitor implements Runnable {
 				String info = null;
 				if ((info = br.readLine()) != null) {
 					System.out.println("接收命令:" + info);
+					String speed = info.split("=")[1];
+					new SpeedController(speed);  //速度处理线程
 				}
 			} catch (IOException e) {
 				logger.info("检测到Socket断开："

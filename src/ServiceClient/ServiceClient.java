@@ -66,11 +66,22 @@ public class ServiceClient extends JFrame implements Runnable {
 	public static JTextField tf_speed2; // 显示出土量
 	public static JTextPane recordTime; // 显示记录时间
 	public static volatile ArrayList<Socket> socketList;
+	private static int runModel;  //运行模式  0-速度由计数器获取，1-速度由导向系统传入
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		
+		// 获取运行模式
+		if (args.length == 0) {
+			logger.error("未指定运行模式");
+			return;
+		} else {
+			runModel = Integer.valueOf(args[0]);
+		}
+		
+		// 开启界面
 		try {
 			frame = new ServiceClient();
 			frame.setVisible(true);
@@ -88,33 +99,6 @@ public class ServiceClient extends JFrame implements Runnable {
 					+ "启动失败：雷达初始化失败！");
 			textArea.append("\r\n");
 			return;
-		}
-
-		// 获取滚轮直径
-		String path = System.getProperty("user.dir");
-		String filePath = path + File.separator + "param.txt";
-		File file = new File(filePath);
-		if (!file.exists()) { // 未设置滚轮直径，弹出提示框要求设置
-			String inputValue = (String) JOptionPane.showInputDialog(frame,
-					"设置滚轮直径(单位：cm)", "参数设置", JOptionPane.WARNING_MESSAGE, null,
-					null, "10");
-			try {
-				FileUtils.writeStringToFile(file, inputValue, "UTF-8", false);
-			} catch (IOException e) {
-				logger.error("写入参数失败", e);
-			}
-		}
-		String diameter = ""; // 滚轮直径
-		try {
-			diameter = FileUtils.readFileToString(file, "UTF-8");
-			if (diameter.equals("")) {
-				textArea.append(ServiceClient.df.format(new Date()) + " "
-						+ "启动失败：未获取到滚轮直径！");
-				textArea.append("\r\n");
-				return;
-			}
-		} catch (IOException e) {
-			logger.error("读取参数失败", e);
 		}
 
 		// 检测是否有校准值
@@ -155,12 +139,43 @@ public class ServiceClient extends JFrame implements Runnable {
 				return;
 			}
 		}
+		
+		//开启数据处理线程
 		textArea.setForeground(Color.GREEN);
 		Thread t1 = new Thread(new DataOperater());
 		t1.setPriority(10);
 		t1.start();
-		AnswerCmd.controlPort("开始监控,滚轮直径:" + diameter);
 		
+		// 如果运行模式为0模式，则获取滚轮直径，并开启计数器数据收集线程
+		if (runModel == 0) {
+			String filePath = "c:\\param.txt";
+			File file = new File(filePath);
+			if (!file.exists()) { // 未设置滚轮直径，弹出提示框要求设置
+				String inputValue = (String) JOptionPane.showInputDialog(frame,
+						"设置滚轮直径(单位：cm)", "参数设置", JOptionPane.WARNING_MESSAGE, null,
+						null, "10");
+				try {
+					FileUtils.writeStringToFile(file, inputValue, "UTF-8", false);
+				} catch (IOException e) {
+					logger.error("写入参数失败", e);
+				}
+			}
+			String diameter = ""; // 滚轮直径
+			try {
+				diameter = FileUtils.readFileToString(file, "UTF-8");
+				if (diameter.equals("")) {
+					textArea.append(ServiceClient.df.format(new Date()) + " "
+							+ "启动失败：未获取到滚轮直径！");
+					textArea.append("\r\n");
+					return;
+				}
+			} catch (IOException e) {
+				logger.error("读取参数失败", e);
+			}
+			AnswerCmd.controlPort("开始监控,滚轮直径:" + diameter);			
+		}
+
+		// 开启Socket
 		try {
 	        ServerSocket server =  new ServerSocket(8888);
 	            logger.info("Server Listenning...");
@@ -174,9 +189,6 @@ public class ServiceClient extends JFrame implements Runnable {
 	        } catch (IOException e) {
 	        	logger.error("Socket异常", e);
 	        }
-
-		
-
 	}
 
 	private static void stopLidar() throws Exception {

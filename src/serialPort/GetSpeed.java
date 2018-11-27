@@ -117,42 +117,48 @@ public class GetSpeed implements SerialPortEventListener, Runnable {
 			double lineSpeed = bg.setScale(2, BigDecimal.ROUND_HALF_UP)
 					.doubleValue();
 			System.out.println("线速度=" + lineSpeed);
-			if (lineSpeed > 0) {
-				if (RecieveFromPort.isRun == false) {
-					// 启动串口数据接收线程
-					RecieveFromPort.isRun = true;
-					RecieveFromPort.isBengin = true;
-					RecieveFromPort.isRound = false;
-					Thread reciveFromPort = new Thread(new RecieveFromPort());
-					reciveFromPort.setName("串口数据接收");
-					ServiceClient.textArea.append(ServiceClient.df
-							.format(new Date()) + " " + "开始接收数据...");
-					ServiceClient.textArea.append("\r\n");
-					reciveFromPort.setPriority(10);
-					reciveFromPort.start();
-				}
-				// 将速度写入数据库
-				new Thread(new WriteToDb(String.valueOf(lineSpeed), 2)).start();
-			} else {  //速度为0，不写入数据库，界面展示+Socket发送
-				if (RecieveFromPort.isRun == true) {
-					SerialTool.stopMeasure();// 停止雷达测量
-					ServiceClient.textArea.append(ServiceClient.df
-							.format(new Date()) + " " + "停止接收数据...");
-					ServiceClient.textArea.append("\r\n");
-				}
-				
-				// 前端实时显示
-				String recordTime = sdf.format(new Date());
-				ServiceClient.tf_speed.setText("0");
-				ServiceClient.tf_speed2.setText("0");
-				ServiceClient.recordTime.setText("记录时间："
-						+ recordTime);
-				
-				//通过Socket向外发送消息
-				String message = "speed=0" + ";" + "time=" + recordTime;
-				new SendToSocket(message);
-			}
+			
+			// 速度控制雷达
+			controlLidar(lineSpeed);  
 
+		}
+	}
+	
+	public void controlLidar (double lineSpeed) {
+		if (lineSpeed > 0) {
+			if (RecieveFromPort.isRun == false) {
+				// 启动串口数据接收线程
+				RecieveFromPort.isRun = true;
+				RecieveFromPort.isBengin = true;
+				RecieveFromPort.isRound = false;
+				Thread reciveFromPort = new Thread(new RecieveFromPort());
+				reciveFromPort.setName("串口数据接收");
+				ServiceClient.textArea.append(ServiceClient.df
+						.format(new Date()) + " " + "开始接收数据...");
+				ServiceClient.textArea.append("\r\n");
+				reciveFromPort.setPriority(10);
+				reciveFromPort.start();
+			}
+			// 将速度写入数据库
+			new Thread(new WriteToDb(String.valueOf(lineSpeed), 2)).start();
+		} else {  //速度为0，不写入数据库，界面展示+Socket发送
+			if (RecieveFromPort.isRun == true) {
+				SerialTool.stopMeasure();// 停止雷达测量
+				ServiceClient.textArea.append(ServiceClient.df
+						.format(new Date()) + " " + "停止接收数据...");
+				ServiceClient.textArea.append("\r\n");
+			}
+			
+			// 前端实时显示
+			String recordTime = sdf.format(new Date());
+			ServiceClient.tf_speed.setText("0");
+			ServiceClient.tf_speed2.setText("0");
+			ServiceClient.recordTime.setText("记录时间："
+					+ recordTime);
+			
+			//通过Socket向外发送消息
+			String message = "speed=0" + ";" + "time=" + recordTime;
+			new SendToSocket(message);
 		}
 	}
 }
