@@ -94,10 +94,7 @@ public class ServiceClient extends JFrame implements Runnable {
 			stopLidar();
 		} catch (Exception e) {
 			logger.error("雷达初始化失败", e);
-			textArea.setForeground(Color.RED);
-			textArea.append(ServiceClient.df.format(new Date()) + " "
-					+ "启动失败：雷达初始化失败！");
-			textArea.append("\r\n");
+			showMessage("error","启动失败：雷达初始化失败！");
 			return;
 		}
 
@@ -122,26 +119,19 @@ public class ServiceClient extends JFrame implements Runnable {
 				if (!getInitResult()) { // 校准失败
 					JOptionPane.showMessageDialog(frame, "校准失败！请重新校准！", "校准",
 							JOptionPane.ERROR_MESSAGE);
-					textArea.setForeground(Color.RED);
-					textArea.append(ServiceClient.df.format(new Date()) + " "
-							+ "启动失败：校准失败！");
-					textArea.append("\r\n");
+					showMessage("error","启动失败：校准失败！");
 					return;
 				} else {
 					JOptionPane.showMessageDialog(frame, "校准成功！", "校准",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 			} else {
-				textArea.setForeground(Color.RED);
-				textArea.append(ServiceClient.df.format(new Date()) + " "
-						+ "启动失败：未进行校准！");
-				textArea.append("\r\n");
+				showMessage("error","启动失败：未进行校准！");
 				return;
 			}
 		}
 		
 		//开启数据处理线程
-		textArea.setForeground(Color.GREEN);
 		Thread t1 = new Thread(new DataOperater());
 		t1.setPriority(10);
 		t1.start();
@@ -164,15 +154,16 @@ public class ServiceClient extends JFrame implements Runnable {
 			try {
 				diameter = FileUtils.readFileToString(file, "UTF-8");
 				if (diameter.equals("")) {
-					textArea.append(ServiceClient.df.format(new Date()) + " "
-							+ "启动失败：未获取到滚轮直径！");
-					textArea.append("\r\n");
+					showMessage("error","启动失败：未获取到滚轮直径！");
 					return;
 				}
 			} catch (IOException e) {
 				logger.error("读取参数失败", e);
 			}
-			AnswerCmd.controlPort("开始监控,滚轮直径:" + diameter);			
+			showMessage("normal", "启动成功！");
+			AnswerCmd.controlPort("开始监控,滚轮直径:" + diameter);
+		} else {
+			showMessage("normal", "启动成功！");
 		}
 
 		// 开启Socket
@@ -184,7 +175,7 @@ public class ServiceClient extends JFrame implements Runnable {
 	                Socket clientSocket = server.accept();
 	                socketList.add(clientSocket);
 	                logger.info(clientSocket.getInetAddress().getHostAddress() + " connected...");
-	                new Thread(new SocketMonitor(clientSocket)).start(); //为每个线程开启一个监控线程
+	                new Thread(new SocketMonitor(clientSocket)).start(); //为每个Socket开启一个接收线程
 	            }
 	        } catch (IOException e) {
 	        	logger.error("Socket异常", e);
@@ -383,5 +374,16 @@ public class ServiceClient extends JFrame implements Runnable {
 			logger.error("删除初始值失败", e2);
 		}
 		exit();
+	}
+	
+	public static void showMessage(String type, String message) {
+		if ("normal".equals(type)) {
+			textArea.setForeground(Color.GREEN);
+		} else {
+			textArea.setForeground(Color.RED);
+		}
+		textArea.append(ServiceClient.df.format(new Date()) + " "
+				+ message);
+		textArea.append("\r\n");
 	}
 }

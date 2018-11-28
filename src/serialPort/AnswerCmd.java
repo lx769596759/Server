@@ -59,25 +59,17 @@ public class AnswerCmd {
 					| SerialPortOutputStreamCloseFailure | InterruptedException e) {
 				ServiceClient.logger.error(e.getMessage(), e);
 			}
-
-			ServiceClient.textArea.append(ServiceClient.df.format(new Date())
-					+ " " + "开始校准...");
-			ServiceClient.textArea.append("\r\n");
+			ServiceClient.showMessage("normal", "开始校准...");
 		}
 
 		if (cmd.contains("stop校准")) {
-			ServiceClient.textArea.append(ServiceClient.df.format(new Date())
-					+ " " + "停止校准...");
-			ServiceClient.textArea.append("\r\n");
+			ServiceClient.showMessage("normal", "停止校准...");
 		}
 		if (cmd.contains("开始")) {
 			StringBuffer sb = new StringBuffer();
 			String diameter = sb.append(cmd).substring(10, cmd.length());
 			GetSpeed.diameter = Double.parseDouble(diameter)/100;  //传过来是cm,转成m
 			new Thread(new GetSpeed()).start();// 开启测速线程
-			ServiceClient.textArea.append(ServiceClient.df.format(new Date())
-					+ " " + "开始监控传送带速度...");
-			ServiceClient.textArea.append("\r\n");
 		}
 		if (cmd.contains("停止")) {
 			if (GetSpeed.timer != null) {
@@ -86,9 +78,7 @@ public class AnswerCmd {
 			if (RecieveFromPort.serialCom != null) {
 				SerialTool.stopMeasure();// 停止雷达扫描
 			}
-			ServiceClient.textArea.append(ServiceClient.df.format(new Date())
-					+ " " + "停止监控传送带速度...");
-			ServiceClient.textArea.append("\r\n");
+			ServiceClient.showMessage("normal", "停止监控传送带速度...");
 		}
 	}
 }

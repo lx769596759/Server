@@ -46,6 +46,7 @@ public class GetSpeed implements SerialPortEventListener, Runnable {
 		GetSpeed gs = new GetSpeed();
 		GetSpeed.GetSpeedTask mt = gs.new GetSpeedTask(serialCom);
 		timer.schedule(mt, 1, 1000);
+		ServiceClient.showMessage("normal", "开始监控传送带速度...");
 	}
 
 	class GetSpeedTask extends TimerTask {
@@ -133,9 +134,7 @@ public class GetSpeed implements SerialPortEventListener, Runnable {
 				RecieveFromPort.isRound = false;
 				Thread reciveFromPort = new Thread(new RecieveFromPort());
 				reciveFromPort.setName("串口数据接收");
-				ServiceClient.textArea.append(ServiceClient.df
-						.format(new Date()) + " " + "开始接收数据...");
-				ServiceClient.textArea.append("\r\n");
+				ServiceClient.showMessage("normal", "开始接收数据...");
 				reciveFromPort.setPriority(10);
 				reciveFromPort.start();
 			}
@@ -144,9 +143,7 @@ public class GetSpeed implements SerialPortEventListener, Runnable {
 		} else {  //速度为0，不写入数据库，界面展示+Socket发送
 			if (RecieveFromPort.isRun == true) {
 				SerialTool.stopMeasure();// 停止雷达测量
-				ServiceClient.textArea.append(ServiceClient.df
-						.format(new Date()) + " " + "停止接收数据...");
-				ServiceClient.textArea.append("\r\n");
+				ServiceClient.showMessage("normal", "停止接收数据...");
 			}
 			
 			// 前端实时显示
