@@ -1,10 +1,12 @@
 package serialPort;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import ServiceClient.ServiceClient;
 import dbUtility.WriteToDb;
 import dbUtility.dbTools;
@@ -116,18 +118,19 @@ public class DataOperater implements Runnable {
 					// 算出出土速度
 					double finalValue = value * speed;
 					finalValue = (double) Math.round(finalValue * 100000) / 100000; // 保留五位小数
+					String strFinalValue = new BigDecimal(finalValue + "").toString(); // 取消科学技术法
 					// 将出土速度存入数据库中
-					new Thread(new WriteToDb(String.valueOf(finalValue), 3))
+					new Thread(new WriteToDb(strFinalValue, 3))
 							.start();
 
 					// 前端实时显示
 					String recordTime = sdf.format(new Date());
 					ServiceClient.tf_speed.setText(String.valueOf(speed));
-					ServiceClient.tf_speed2.setText(String.valueOf(finalValue));
+					ServiceClient.tf_speed2.setText(strFinalValue);
 					ServiceClient.recordTime.setText("记录时间：" + recordTime);
 
 					// 通过Socket向外发送消息
-					String message = "speed=" + finalValue + ";" + "time="
+					String message = "speed=" + strFinalValue + ";" + "time="
 							+ recordTime;
 					new SendToSocket(message);
 
