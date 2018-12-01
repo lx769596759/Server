@@ -30,8 +30,8 @@ public class DataOperater implements Runnable {
 					conn.close();
 					break;
 				}
-				String sql1 = "Select top 1 * from table_1 where READFLAG=0 order by 记录时间";// 只取READFLAG=0的数据
-				String sql2 = "Select top 1 * from table_3 where READFLAG=0 order by 记录时间";// 只取READFLAG=0的数据
+				String sql1 = "Select * from table_1 where READFLAG=0 order by 记录时间  limit 0,1";// 只取READFLAG=0的数据
+				String sql2 = "Select * from table_3 where READFLAG=0 order by 记录时间  limit 0,1";// 只取READFLAG=0的数据
 				try {
 
 					String result1 = db.ddlSelect(sql1, conn, "测量均值", "记录时间");
