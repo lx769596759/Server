@@ -54,13 +54,9 @@ public class RecieveFromPort implements Runnable {
 				}
 			}
 			if (serialCom != null) {
-				ServiceClient.textArea.append(ServiceClient.df
-						.format(new Date()) + " " + "已成功打开串口,数据接收中...");
-				ServiceClient.textArea.append("\r\n");
+				ServiceClient.showMessage("normal", "已成功打开串口,数据接收中...");
 			} else {
-				ServiceClient.textArea.append(ServiceClient.df
-						.format(new Date()) + " " + "打开串口失败...");
-				ServiceClient.textArea.append("\r\n");
+				ServiceClient.showMessage("error","打开雷达串口失败...");
 			}
 		}
 		// 初始化串口的数据
