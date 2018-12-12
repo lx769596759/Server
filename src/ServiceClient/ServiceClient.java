@@ -354,6 +354,17 @@ public class ServiceClient extends JFrame implements Runnable {
 		if (RecieveFromPort.serialCom != null) {
 			SerialTool.stopMeasure();// Õ£÷π¿◊¥Ô…®√Ë
 		}
+		if (runModel == 1) {
+			for (Socket socket : socketList) {
+				try {
+					socket.close();
+				} catch (IOException e) {
+					logger.error("socketπÿ±’ ß∞‹",e);				
+				} finally {
+					socket = null;
+				}
+			}
+		}
 		System.exit(0);
 	}
 
